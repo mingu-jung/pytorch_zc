@@ -64,6 +64,8 @@ static inline Backend dispatchKeyToBackend(DispatchKey t) {
     return Backend::CPU;
   } else if (t == DispatchKey::CUDA || t == DispatchKey::AutogradCUDA) {
     return Backend::CUDA;
+  } else if (t == DispatchKey::ZC) {
+    return Backend::CUDA;
   } else if (t == DispatchKey::HIP) {
     return Backend::HIP;
   } else if (t == DispatchKey::VE) {

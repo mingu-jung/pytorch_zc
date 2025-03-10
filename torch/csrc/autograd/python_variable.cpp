@@ -1185,6 +1185,14 @@ PyObject* THPVariable_is_cuda(THPVariable* self, void* unused) {
   END_HANDLE_TH_ERRORS
 }
 
+PyObject *THPVariable_is_zc(THPVariable *self, void *unused)
+ {
+   HANDLE_TH_ERRORS
+   auto& self_ = self->cdata;
+   return torch::autograd::utils::wrap(self_.is_zc());
+   END_HANDLE_TH_ERRORS
+ }
+
 PyObject* THPVariable_is_ipu(THPVariable* self, void* unused) {
   HANDLE_TH_ERRORS
   if (check_has_torch_function((PyObject*)self)) {
@@ -1432,6 +1440,7 @@ static struct PyGetSetDef THPVariable_properties[] = {
     {"name", (getter)THPVariable_get_name, nullptr, nullptr, nullptr},
     {"shape", (getter)THPVariable_get_shape, nullptr, nullptr, nullptr},
     {"is_cuda", (getter)THPVariable_is_cuda, nullptr, nullptr, nullptr},
+    {"is_zc", (getter)THPVariable_is_zc, nullptr, nullptr, nullptr},
     {"is_cpu", (getter)THPVariable_is_cpu, nullptr, nullptr, nullptr},
     {"is_xpu", (getter)THPVariable_is_xpu, nullptr, nullptr, nullptr},
     {"is_ipu", (getter)THPVariable_is_ipu, nullptr, nullptr, nullptr},

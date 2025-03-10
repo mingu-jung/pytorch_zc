@@ -31,6 +31,7 @@ namespace c10 {
 #define C10_FORALL_BACKEND_COMPONENTS(_, extra) \
   _(CPU, extra)                                 \
   _(CUDA, extra)                                \
+  _(ZC, extra)                                  \
   _(HIP, extra)                                 \
   _(XLA, extra)                                 \
   _(MPS, extra)                                 \
@@ -224,6 +225,8 @@ enum class DispatchKey : uint16_t {
   // can be registered to implement the custom determination of the
   // correct backend.
   BackendSelect,
+
+  ZC,
 
   Python,
 

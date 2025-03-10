@@ -84,6 +84,7 @@ _SKIP_PYTHON_BINDINGS = [
     "alias",
     "contiguous",
     "is_cuda",
+    "is_zc",
     "is_sparse",
     "is_sparse_csr",
     "size",

@@ -19,6 +19,7 @@ DeviceType parse_type(const std::string& device_string) {
       types = {{
           {"cpu", DeviceType::CPU},
           {"cuda", DeviceType::CUDA},
+          {"zc", DeviceType::ZC},
           {"ipu", DeviceType::IPU},
           {"xpu", DeviceType::XPU},
           {"mkldnn", DeviceType::MKLDNN},

@@ -22,7 +22,7 @@ struct CUDAGuardImpl final : public c10::impl::DeviceGuardImplInterface {
 
   CUDAGuardImpl() = default;
   explicit CUDAGuardImpl(DeviceType t) {
-    TORCH_INTERNAL_ASSERT(t == DeviceType::CUDA);
+    TORCH_INTERNAL_ASSERT(t == DeviceType::CUDA || t == DeviceType::ZC);
   }
   DeviceType type() const override {
     return DeviceType::CUDA;

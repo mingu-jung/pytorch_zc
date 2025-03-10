@@ -120,7 +120,7 @@ class InlineDeviceGuard {
   void set_device(at::Device device) {
     AT_ASSERT(
         (U::static_type == DeviceType::HIP && device.is_cuda()) ||
-        device.type() == U::static_type);
+        device.type() == U::static_type || device.type() == DeviceType::ZC); // as a workaround for unified
     auto index = device.index();
     if (index == -1)
       return;

@@ -81,6 +81,19 @@ struct C10_API Device final {
     return type_ == DeviceType::CUDA;
   }
 
+  bool is_cuda_or_zc() const noexcept {
+    return is_cuda() || is_zc();
+  }
+
+  bool is_cpu_or_zc() const noexcept {
+    return is_cpu() || is_zc();
+  }
+
+  /// Return true if the device is of Unified type.
+  bool is_zc() const noexcept {
+    return type_ == DeviceType::ZC;
+  }
+
   /// Return true if the device is of MPS type.
   bool is_mps() const noexcept {
     return type_ == DeviceType::MPS;
@@ -150,6 +163,12 @@ struct C10_API Device final {
   bool supports_as_strided() const noexcept {
     return type_ != DeviceType::IPU && type_ != DeviceType::XLA &&
         type_ != DeviceType::Lazy;
+  }
+
+  static bool is_equal_or_zc(Device lhs, Device rhs){
+    if (lhs.is_zc() || rhs.is_zc())
+      return true;
+    return lhs.type_ == rhs.type_;
   }
 
   /// Same string as returned from operator<<.

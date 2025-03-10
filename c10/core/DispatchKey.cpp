@@ -11,6 +11,8 @@ const char* toString(BackendComponent t) {
       return "CPUBit";
     case BackendComponent::CUDABit:
       return "CUDABit";
+    case BackendComponent::ZCBit:
+      return "ZCBit";
     case BackendComponent::HIPBit:
       return "HIPBit";
     case BackendComponent::XLABit:
@@ -300,6 +302,7 @@ c10::DispatchKey parseDispatchKey(const std::string& k) {
 
       {"CPU", c10::DispatchKey::CPU},
       {"CUDA", c10::DispatchKey::CUDA},
+      {"ZC", c10::DispatchKey::ZC},
       {"HIP", c10::DispatchKey::HIP},
       {"XLA", c10::DispatchKey::XLA},
       {"MPS", c10::DispatchKey::MPS},
