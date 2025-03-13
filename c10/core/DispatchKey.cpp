@@ -11,8 +11,6 @@ const char* toString(BackendComponent t) {
       return "CPUBit";
     case BackendComponent::CUDABit:
       return "CUDABit";
-    case BackendComponent::ZCBit:
-      return "ZCBit";
     case BackendComponent::HIPBit:
       return "HIPBit";
     case BackendComponent::XLABit:
@@ -74,6 +72,9 @@ const char* toString(DispatchKey t) {
       return "Vulkan";
     case DispatchKey::Metal:
       return "Metal";
+
+    case DispatchKey::ZC:
+      return "ZC";
 
     case DispatchKey::Lazy:
       return "Lazy";

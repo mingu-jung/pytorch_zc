@@ -28,8 +28,7 @@ namespace c10 {
   _(Lazy, extra)                                  \
   _(Meta, extra)                                  \
   _(MTIA, extra)                                  \
-  _(PrivateUse1, extra)                           \
-  _(ZC, extra)
+  _(PrivateUse1, extra)                           
 
 enum class DeviceType : int8_t {
   CPU = 0,

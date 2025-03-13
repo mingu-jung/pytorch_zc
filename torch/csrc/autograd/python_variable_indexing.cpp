@@ -96,9 +96,9 @@ static inline int64_t count_specified_dimensions(PyObject* index) {
 static inline Variable sequenceToVariable(
     c10::TensorOptions options,
     PyObject* seq) {
-  if (dispatch_key == c10::DispatchKey::ZC){ // TODO: current use ad hoc solution to improve unified performance by reducing redundant UVM allocation
-    dispatch_key = c10::DispatchKey::CUDA;
-  }
+  // if (dispatch_key == c10::DispatchKey::ZC){ // TODO: current use ad hoc solution to improve unified performance by reducing redundant UVM allocation
+  //   dispatch_key = c10::DispatchKey::CUDA;
+  // }
   return torch::utils::indexing_tensor_from_data(
       options, kLong, c10::nullopt, seq);
 }

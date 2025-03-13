@@ -52,7 +52,7 @@ class Variant(Enum):
 DEFAULT_KERNEL_NAMESPACE = "at::native"
 
 # NOTE: Keep the list in sync with `DispatchKey` in c10/core/DispatchKey.h
-BACKEND_COMPONENTS = "CPU CUDA ZC HIP XLA MPS IPU XPU HPU VE Lazy Meta PrivateUse1 PrivateUse2 PrivateUse3".split()
+BACKEND_COMPONENTS = "CPU CUDA HIP XLA MPS IPU XPU HPU VE Lazy Meta PrivateUse1 PrivateUse2 PrivateUse3".split()
 FUNCTIONALITY_KEYS = ["", "Quantized", "Sparse", "NestedTensor", "Autograd"]
 
 # This list guards dispatches that can be used in derivatives.yaml

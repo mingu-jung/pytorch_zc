@@ -31,7 +31,6 @@ namespace c10 {
 #define C10_FORALL_BACKEND_COMPONENTS(_, extra) \
   _(CPU, extra)                                 \
   _(CUDA, extra)                                \
-  _(ZC, extra)                                  \
   _(HIP, extra)                                 \
   _(XLA, extra)                                 \
   _(MPS, extra)                                 \

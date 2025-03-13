@@ -116,8 +116,6 @@ DispatchKeySet getBackendKeySetFromAutograd(DispatchKey t) {
       return DispatchKeySet(DispatchKey::CPU);
     case DispatchKey::AutogradCUDA:
       return DispatchKeySet(DispatchKey::CUDA);
-    case DispatchKey::AutogradZC:
-      return DispatchKeySet(DispatchKey::ZC);
     case DispatchKey::AutogradXLA:
       return DispatchKeySet(DispatchKey::XLA);
     case DispatchKey::AutogradLazy:

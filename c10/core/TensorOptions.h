@@ -648,6 +648,8 @@ inline DispatchKey computeDispatchKey(
           return DispatchKey::Vulkan;
         case DeviceType::Metal:
           return DispatchKey::Metal;
+        case DeviceType::ZC:
+          return DispatchKey::ZC;
         case DeviceType::MKLDNN:
         case DeviceType::OPENGL:
         case DeviceType::OPENCL:
@@ -744,6 +746,9 @@ inline DeviceType dispatchKeyToDeviceType(DispatchKey dispatch_key) {
       return DeviceType::CPU;
     case DispatchKey::Vulkan:
       return DeviceType::Vulkan;
+
+    case DispatchKey::ZC:
+      return DeviceType::ZC;
 
     case DispatchKey::ORT:
       return DeviceType::ORT;
