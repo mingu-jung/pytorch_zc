@@ -207,7 +207,7 @@ void reshape_2d_sparse_compressed_members_to_nd_batched(
 // according to the actual device at the time of this function call.  No-op
 // if the device_index is set.
 static inline Device ensure_has_index(Device device) {
-  if (device.is_cpu() || device.has_index()) {
+  if (device.is_cpu() || device.is_zc() || device.has_index()) {
     return device;
   }
   const c10::impl::DeviceGuardImplInterface* impl = c10::impl::getDeviceGuardImpl(device.type());

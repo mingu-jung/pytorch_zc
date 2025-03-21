@@ -1190,9 +1190,9 @@ PyObject *THPVariable_is_zc(THPVariable *self, void *unused)
    HANDLE_TH_ERRORS
   //  auto& self_ = self->cdata;
   //  return torch::autograd::utils::wrap(self_.is_zc());
-   if (check_has_torch_function((PyObject*)self)) {
-    return handle_torch_function_getter(self, "is_zc");
-  }
+  // if (check_has_torch_function((PyObject*)self)) {
+  //   return handle_torch_function_getter(self, "is_zc");
+  // }
   auto& self_ = THPVariable_Unpack(self);
   return torch::autograd::utils::wrap(self_.is_zc());
    END_HANDLE_TH_ERRORS

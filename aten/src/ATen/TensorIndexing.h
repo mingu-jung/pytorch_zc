@@ -310,12 +310,21 @@ static inline void recordTensorIndex(
 };
 
 static inline c10::List<c10::optional<Tensor>> typeConvertIndices(
-    const Tensor& /*self*/,
+    const Tensor& self,
     std::vector<Tensor>&& indices) {
   c10::List<c10::optional<Tensor>> converted_inds;
   converted_inds.reserve(indices.size());
-  for (const auto& i : indices) {
-    converted_inds.push_back(std::move(i));
+  for (const auto& ind : indices) {
+    if (ind.defined()) {
+      // If the source device is unified and the index isn't, use kCUDA for performance.
+      if (self.device().is_zc() && !ind.device().is_zc()) {
+        converted_inds.push_back(ind.to(ind.options().device(kCUDA)));
+      } else {
+        converted_inds.push_back(ind.to(ind.options().device(self.device())));
+      }
+    } else {
+      converted_inds.push_back(std::move(ind));
+    }
   }
   return converted_inds;
 }

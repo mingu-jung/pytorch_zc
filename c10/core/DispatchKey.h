@@ -162,6 +162,7 @@ enum class DispatchKey : uint16_t {
   // See [Note: Per-Backend Functionality Dispatch Keys]
   Dense,
 
+  ZC,
   // Below are non-extensible backends.
   // These are backends that currently don't have their own overrides for
   // Autograd/Sparse/Quantized kernels,
@@ -224,8 +225,6 @@ enum class DispatchKey : uint16_t {
   // can be registered to implement the custom determination of the
   // correct backend.
   BackendSelect,
-
-  ZC,
 
   Python,
 

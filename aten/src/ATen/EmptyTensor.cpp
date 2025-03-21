@@ -16,6 +16,16 @@ c10::Allocator* GetCPUAllocatorMaybePinned(bool pin_memory) {
   return c10::GetCPUAllocator();
 }
 
+c10::Allocator* GetCPUAllocatorMaybePinned_ZC(bool pin_memory,
+                                          c10::optional<Device> device_opt) {
+  if (device_or_default(device_opt).type() == DeviceType::ZC){
+    return at::detail::getCUDAHooks().getZeroCopyAllocator();
+  } else if (pin_memory) {
+    return at::detail::getCUDAHooks().getPinnedMemoryAllocator();
+  }
+  return c10::GetCPUAllocator();
+}
+
 constexpr uint64_t storage_max() {
   // int64_t and size_t are used somewhat inconsistently throughout ATen.
   // To be safe, storage size calculations must fit in both types.
@@ -229,11 +239,21 @@ TensorBase empty_strided_symint_generic(
   return _empty_strided_generic<SymIntArrayRef>(size, stride, allocator, ks, scalar_type);
 }
 
-TensorBase empty_cpu(IntArrayRef size, ScalarType dtype, bool pin_memory,
+TensorBase empty_cpu(IntArrayRef size, ScalarType dtype, 
+                     c10::optional<Device> device_opt,
+                     bool pin_memory,
                      c10::optional<c10::MemoryFormat> memory_format_opt) {
-  auto allocator = GetCPUAllocatorMaybePinned(pin_memory);
-  constexpr c10::DispatchKeySet cpu_ks(c10::DispatchKey::CPU);
-  return empty_generic(size, allocator, cpu_ks, dtype, memory_format_opt);
+  c10::Allocator *allocator;
+  if (device_or_default(device_opt).type() == DeviceType::ZC) {
+    allocator = GetCPUAllocatorMaybePinned_ZC(pin_memory, device_opt);
+    constexpr c10::DispatchKeySet zc_ks(c10::DispatchKey::ZC);
+    return empty_generic(size, allocator, zc_ks, dtype, memory_format_opt);
+  } else {
+    allocator = GetCPUAllocatorMaybePinned(pin_memory);
+    constexpr c10::DispatchKeySet cpu_ks(c10::DispatchKey::CPU);
+    return empty_generic(size, allocator, cpu_ks, dtype, memory_format_opt);
+  }
+  // return empty_generic(size, allocator, cpu_ks, dtype, memory_format_opt);
 }
 
 TensorBase empty_cpu(
@@ -243,12 +263,12 @@ TensorBase empty_cpu(
     c10::optional<Device> device_opt,
     c10::optional<bool> pin_memory_opt,
     c10::optional<c10::MemoryFormat> memory_format_opt) {
-  TORCH_INTERNAL_ASSERT_DEBUG_ONLY(device_or_default(device_opt).type() == DeviceType::CPU);
+  TORCH_INTERNAL_ASSERT_DEBUG_ONLY(device_or_default(device_opt).type() == DeviceType::CPU || device_or_default(device_opt).type() == DeviceType::ZC);
   TORCH_INTERNAL_ASSERT_DEBUG_ONLY(layout_or_default(layout_opt) == Layout::Strided);
 
   auto pin_memory = pinned_memory_or_default(pin_memory_opt);
   auto dtype = dtype_or_default(dtype_opt);
-  return empty_cpu(size, dtype, pin_memory, memory_format_opt);
+  return empty_cpu(size, dtype, device_opt, pin_memory, memory_format_opt);
 }
 
 TensorBase empty_cpu(
@@ -263,11 +283,21 @@ TensorBase empty_cpu(
 }
 
 TensorBase empty_strided_cpu(IntArrayRef size, IntArrayRef stride,
-                             ScalarType dtype, bool pin_memory) {
-  auto allocator = at::detail::GetCPUAllocatorMaybePinned(pin_memory);
-  constexpr c10::DispatchKeySet cpu_ks(c10::DispatchKey::CPU);
-  return at::detail::empty_strided_generic(
+                             ScalarType dtype, 
+                             c10::optional<Device> device_opt,
+                             bool pin_memory) {
+  c10::Allocator *allocator;      
+  if (device_or_default(device_opt).type() == DeviceType::ZC) {
+    allocator = at::detail::GetCPUAllocatorMaybePinned_ZC(pin_memory, device_opt);
+    constexpr c10::DispatchKeySet zc_ks(c10::DispatchKey::ZC);
+    return at::detail::empty_strided_generic(
+      size, stride, allocator, zc_ks, dtype);
+  } else {
+    allocator = at::detail::GetCPUAllocatorMaybePinned(pin_memory);
+    constexpr c10::DispatchKeySet cpu_ks(c10::DispatchKey::CPU);
+    return at::detail::empty_strided_generic(
       size, stride, allocator, cpu_ks, dtype);
+  }
 }
 
 TensorBase empty_strided_cpu(
@@ -277,12 +307,12 @@ TensorBase empty_strided_cpu(
     c10::optional<Layout> layout_opt,
     c10::optional<Device> device_opt,
     c10::optional<bool> pin_memory_opt) {
-  TORCH_INTERNAL_ASSERT_DEBUG_ONLY(device_or_default(device_opt).type() == DeviceType::CPU);
+  TORCH_INTERNAL_ASSERT_DEBUG_ONLY(device_or_default(device_opt).type() == DeviceType::CPU || device_or_default(device_opt).type() == DeviceType::ZC);
   TORCH_INTERNAL_ASSERT_DEBUG_ONLY(layout_or_default(layout_opt) == Layout::Strided);
 
   auto pin_memory = pinned_memory_or_default(pin_memory_opt);
   auto dtype = dtype_or_default(dtype_opt);
-  return at::detail::empty_strided_cpu(size, stride, dtype, pin_memory);
+  return at::detail::empty_strided_cpu(size, stride, dtype, device_opt, pin_memory);
 }
 
 TensorBase empty_strided_cpu(

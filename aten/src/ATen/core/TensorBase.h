@@ -406,11 +406,23 @@ class TORCH_API TensorBase {
     return impl_->is_cuda();
   }
 
-  /// Returns if a `Tensor` has CUDA backend.
+  /// Returns if a `Tensor` has CUDA (ZC) backend.
   bool is_zc() const {
     // NB: this is not a native function to avoid dispatching overhead.
     return impl_->is_zc();
   }
+
+  /// Returns if a `Tensor` has CUDA (ZC) backend.
+  bool is_cuda_or_zc() const {
+    // NB: this is not a native function to avoid dispatching overhead.
+    return impl_->is_zc() || impl_->is_cuda();
+  }
+
+  // /// Returns if a `Tensor` has CUDA (ZC) backend.
+  // bool is_cpu_or_zc() const {
+  //   // NB: this is not a native function to avoid dispatching overhead.
+  //   return impl_->is_zc() || impl_->is_cpu();
+  // }
 
   /// Returns if a `Tensor` has IPU backend.
   bool is_ipu() const {

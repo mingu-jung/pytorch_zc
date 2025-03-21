@@ -8299,8 +8299,10 @@ C10_MAPPINGS = collections.OrderedDict(
         ("c10/cuda/CUDAStream.h", ("c10/hip/HIPStream.h", API_C10)),
         ("c10/cuda/CUDAGraphsC10Utils.h", ("c10/hip/HIPGraphsC10Utils.h", API_C10)),
         ("c10/cuda/CUDACachingAllocator.h", ("c10/hip/HIPCachingAllocator.h", API_C10)),
+        # ("c10/cuda/CUDAZCAllocator.h", ("c10/hip/HIPZCAllocator.h", API_C10)),
         ("c10/cuda/impl/CUDATest.h", ("c10/hip/impl/HIPTest.h", API_C10)),
         ("c10/cuda/impl/CUDAGuardImpl.h", ("c10/hip/impl/HIPGuardImpl.h", API_C10)),
+        # ("c10/cuda/impl/ZCGuardImpl.h", ("c10/hip/impl/HIPZCGuardImpl.h", API_C10)),
         (
             "c10/cuda/impl/cuda_cmake_macros.h",
             ("c10/hip/impl/hip_cmake_macros.h", API_C10),
@@ -8330,9 +8332,11 @@ C10_MAPPINGS = collections.OrderedDict(
         ("setCurrentCUDAStream", ("setCurrentHIPStream", API_C10)),
         ("cuda::CUDACachingAllocator", ("hip::HIPCachingAllocator", API_C10)),
         ("CUDACachingAllocator", ("HIPCachingAllocator", API_C10)),
-        ("c10::cuda::CUDAAllocator", ("c10::hip::HIPAllocator", API_C10)),
-        ("cuda::CUDAAllocator", ("hip::HIPAllocator", API_C10)),
-        ("CUDAAllocator", ("HIPAllocator", API_C10)),
+        # ("cuda::CUDAZCAllocator", ("hip::HIPZCAllocator", API_C10)),
+        # ("CUDAZCAllocator", ("HIPZCAllocator", API_C10)),
+        # ("c10::cuda::ZCAllocator", ("c10::hip::HIP_ZCAllocator", API_C10)),
+        # ("cuda::ZCAllocator", ("hip::HIP_ZCAllocator", API_C10)),
+        # ("ZCAllocator", ("HIP_ZCAllocator", API_C10)),
         ("C10_CUDA_KERNEL_LAUNCH_CHECK", ("C10_HIP_KERNEL_LAUNCH_CHECK", API_C10))
     ]
 )

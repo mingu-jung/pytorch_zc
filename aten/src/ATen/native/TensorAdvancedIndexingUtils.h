@@ -78,7 +78,7 @@ static AdvancedIndex make_info(Tensor self, IOptTensorListRef orig) {
   }
   // Ensure indices are on the same device as self
   for (auto & indice : indices) {
-    if (indice.defined() && indice.device() != self.device()) {
+    if (indice.defined() && indice.device() != self.device() && !self.device().is_zc() && !indice.device().is_zc()) {
       indice = indice.to(self.device());
     }
   }

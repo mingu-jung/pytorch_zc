@@ -1,5 +1,6 @@
 #include <ATen/cuda/CUDAContext.h>
 #include <c10/cuda/CUDACachingAllocator.h>
+#include <ATen/cuda/ZeroCopyAllocator.h>
 #include <c10/util/CallOnce.h>
 
 #include <ATen/cuda/CUDAConfig.h>
@@ -64,6 +65,10 @@ bool canDeviceAccessPeer(int64_t device, int64_t peer_device) {
 
 Allocator* getCUDADeviceAllocator() {
   return c10::cuda::CUDACachingAllocator::get();
+}
+
+Allocator* getCUDAZCDeviceAllocator() {
+  return at::cuda::getZeroCopyAllocator();
 }
 
 } // namespace cuda

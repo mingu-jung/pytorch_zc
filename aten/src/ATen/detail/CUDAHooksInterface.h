@@ -87,6 +87,10 @@ struct TORCH_API CUDAHooksInterface {
     return false;
   }
 
+  // virtual bool isZCPtr(void* /*data*/) const {
+  //   return false;
+  // }
+
   virtual bool hasCUDA() const {
     return false;
   }
@@ -125,6 +129,10 @@ struct TORCH_API CUDAHooksInterface {
 
   virtual Allocator* getPinnedMemoryAllocator() const {
     TORCH_CHECK(false, "Pinned memory requires CUDA. ", CUDA_HELP);
+  }
+
+  virtual Allocator* getZeroCopyAllocator() const {
+    TORCH_CHECK(false, "ZC Allocator requires CUDA. ", CUDA_HELP);
   }
 
   virtual Allocator* getCUDADeviceAllocator() const {

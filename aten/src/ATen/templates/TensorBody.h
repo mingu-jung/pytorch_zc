@@ -336,6 +336,11 @@ class TORCH_API Tensor: public TensorBase {
     return to(options().device(DeviceType::CUDA), /*non_blocking*/ false, /*copy*/ false);
   }
 
+  // // TODO: The Python version also accepts arguments
+  // Tensor zc() const {
+  //   return to(options().device(DeviceType::ZC), /*non_blocking*/ false, /*copy*/ false);
+  // }
+
   Tensor hip() const {
     return to(options().device(DeviceType::HIP), /*non_blocking*/ false, /*copy*/ false);
   }

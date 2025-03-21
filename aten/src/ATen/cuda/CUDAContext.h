@@ -67,6 +67,7 @@ TORCH_CUDA_CPP_API bool canDeviceAccessPeer(
     int64_t peer_device);
 
 TORCH_CUDA_CPP_API Allocator* getCUDADeviceAllocator();
+TORCH_CUDA_CPP_API Allocator* getCUDAZCDeviceAllocator();
 
 /* Handles */
 TORCH_CUDA_CPP_API cusparseHandle_t getCurrentCUDASparseHandle();

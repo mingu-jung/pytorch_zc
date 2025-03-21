@@ -59,6 +59,7 @@ TORCH_API TensorBase empty_strided_symint_generic(
 TORCH_API TensorBase empty_cpu(
     IntArrayRef size,
     ScalarType dtype,
+    c10::optional<Device> device_opt,
     bool pin_memory = false,
     c10::optional<c10::MemoryFormat> memory_format_opt = c10::nullopt);
 
@@ -76,6 +77,7 @@ TORCH_API TensorBase empty_strided_cpu(
     IntArrayRef size,
     IntArrayRef stride,
     ScalarType dtype,
+    c10::optional<Device> device_opt,
     bool pin_memory = false);
 
 TORCH_API TensorBase empty_strided_cpu(

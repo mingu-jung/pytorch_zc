@@ -1,5 +1,6 @@
 #include "operator_registry.h"
 #include <gtest/gtest.h>
+#include <c10/cuda/CUDAFunctions.h>
 
 namespace torch {
 namespace executor {

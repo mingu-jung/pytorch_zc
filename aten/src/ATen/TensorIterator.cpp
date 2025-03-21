@@ -23,6 +23,7 @@
 
 #include <c10/util/irange.h>
 #include <c10/util/SmallBuffer.h>
+#include <c10/cuda/CUDAFunctions.h>
 
 #include <array>
 #include <algorithm>
@@ -341,6 +342,36 @@ void TensorIteratorBase::compute_types(const TensorIteratorConfig& config) {
   bool has_different_output_dtypes = false;
   bool has_undefined_outputs = false;
 
+  bool has_op_on_cuda = false;
+  bool has_op_not_on_cuda_or_cpu_scalar = false;
+  bool has_op_on_zc = false;
+  int num_cpu_scalars = 0;
+  for (auto& op: operands_){
+    if (!op.is_type_defined() || !op.tensor_base().defined()){
+      continue;
+    }
+    if (op.tensor_base().device().is_cuda()){
+      has_op_on_cuda = true;
+    }
+    else if (op.tensor_base().device().is_cpu() && op.tensor_base().dim() == 0){
+      //printf("Caught cpu scalar\n");
+      num_cpu_scalars++;
+    }
+    else if (op.tensor_base().device().is_zc()){
+      //printf("Caught zc scalar\n");
+      has_op_on_zc = true;
+      continue;
+    }
+    else{
+      //printf("Caught has_op_not_on_cuda_or_cpu_scalar");
+      //printf(" .is_cpu() %d dim %ld\n",op.tensor.device().is_cpu(),op.tensor.dim());
+      has_op_not_on_cuda_or_cpu_scalar = true;
+    }
+  }
+  int _max_cpu_scalars_on_cuda = config.allow_cpu_scalars_ ? 2 : 1;
+  bool zc_can_schedule_on_cuda = has_op_on_cuda || (!has_op_not_on_cuda_or_cpu_scalar && num_cpu_scalars < _max_cpu_scalars_on_cuda);
+  //printf("zc_can_schedule_on_cuda %d\n", zc_can_schedule_on_cuda);
+
   for (auto& op : operands_) {
     // Validates that all inputs have type information, and that
     //   if an output is missing type information that we can infer
@@ -355,7 +386,12 @@ void TensorIteratorBase::compute_types(const TensorIteratorConfig& config) {
       }
 
       if (config.static_device_.has_value()) {
-        op.device = config.static_device_.value();
+        // When ZC scheduling on CUDA is possible, overwrite the device.
+        if (zc_can_schedule_on_cuda && has_op_on_zc) {
+          op.device = Device(kCUDA, cuda::current_device());
+        } else {
+          op.device = config.static_device_.value();
+        }
       } else {
         TORCH_INTERNAL_ASSERT(config.check_all_same_device_);
       }
@@ -375,7 +411,13 @@ void TensorIteratorBase::compute_types(const TensorIteratorConfig& config) {
 
     // Acquires the first non-CPU device (if any) as the common device
     if (common_device == kCPU && !op.tensor_base().is_cpu()) {
-      common_device = op.tensor_base().device();
+      if (zc_can_schedule_on_cuda && has_op_on_zc) {
+        common_device = Device(kCUDA, cuda::current_device());
+      } else if (!op.tensor_base().is_zc()) {
+        common_device = op.tensor_base().device();
+      } else {
+        common_device = kCPU;
+      }
     }
 
     if (!op.is_output) {
@@ -478,7 +520,7 @@ void TensorIteratorBase::compute_types(const TensorIteratorConfig& config) {
         TORCH_CHECK(current_cpu_scalars_on_non_cpu < max_cpu_scalars_on_non_cpu,
                     "Trying to pass too many CPU scalars to non-CPU kernel!");
         ++current_cpu_scalars_on_non_cpu;
-      } else if (op.device.value() != common_device) {
+      } else if (op.device.value() != common_device && !op.tensor_base().is_zc()) {
         TORCH_CHECK(false,
                     "Expected all tensors to be on the same device, but "
                     "found at least two devices, ", common_device, " and ", op.device.value(), "!");

@@ -8,7 +8,7 @@ namespace c10 {
 // Alias key DispatchKey::CompositeExplicitAutograd maps to
 // backend_dispatch_keyset
 constexpr DispatchKeySet backend_dispatch_keyset =
-    autogradother_backends | DispatchKeySet(DispatchKey::Dense);
+    autogradother_backends | DispatchKeySet({DispatchKey::Dense, DispatchKey::ZC});
 
 // See Note [CompositeExplicitAutogradNonFunctional Key]
 // We have several types of decompositions in aten, that each have their own

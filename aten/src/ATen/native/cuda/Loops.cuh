@@ -87,8 +87,8 @@ void gpu_kernel(TensorIteratorBase& iter, const func_t& f) {
 
   for (int arg = 0; arg < iter.ntensors(); arg++) {
     TORCH_INTERNAL_ASSERT(
-      iter.device(arg).is_cuda(),
-      "argument ", arg, ": expected a CUDA device but found ", iter.device(arg));
+      iter.device(arg).is_cuda_or_zc(),
+      "argument ", arg, ": expected a CUDA (or ZC) device but found ", iter.device(arg));
   }
 
   if (iter.numel() == 0) {

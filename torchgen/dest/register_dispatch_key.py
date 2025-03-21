@@ -87,11 +87,13 @@ def gen_empty_impl_names(
         DispatchKey.MPS,
     ):
         dispatch = str(backend_index.dispatch_key).lower()
-        empty_impl = f"at::detail::empty_{dispatch}"
-        empty_strided_impl = f"at::detail::empty_strided_{dispatch}"
         if backend_index.dispatch_key == DispatchKey.ZC:
             empty_impl = "at::detail::empty_cpu"
             empty_strided_impl = "at::detail::empty_strided_cpu"
+        else:
+            empty_impl = f"at::detail::empty_{dispatch}"
+            empty_strided_impl = f"at::detail::empty_strided_{dispatch}"
+        
     elif backend_index.dispatch_key in (
         DispatchKey.CompositeExplicitAutogradNonFunctional,
         DispatchKey.QuantizedCPU,

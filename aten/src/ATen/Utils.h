@@ -51,7 +51,7 @@ static inline std::vector<TensorImpl*> checked_dense_tensor_list_unwrap(
           name,
           "'");
     }
-    if (expr.device().type() != device_type) {
+    if (expr.device().type() != device_type && !expr.device().is_zc()) { // work around: suppress device checking when zc device
       AT_ERROR(
           "Expected object of device type ",
           device_type,

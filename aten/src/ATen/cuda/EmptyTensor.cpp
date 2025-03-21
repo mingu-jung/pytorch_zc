@@ -1,6 +1,9 @@
 #define TORCH_ASSERT_NO_OPERATORS
 #include <ATen/cuda/EmptyTensor.h>
 #include <ATen/cuda/CUDAContext.h>
+
+#include <ATen/cuda/ZeroCopyAllocator.h>
+
 #include <ATen/EmptyTensor.h>
 
 namespace at {
@@ -13,12 +16,24 @@ TensorBase empty_cuda(
     c10::optional<c10::MemoryFormat> memory_format_opt) {
   at::globalContext().lazyInitCUDA();
   const auto device = device_or_default(device_opt);
-  TORCH_INTERNAL_ASSERT(device.is_cuda());
+  TORCH_INTERNAL_ASSERT(device.is_cuda() || device.is_zc());
   const DeviceGuard device_guard(device);
-  auto* allocator = at::cuda::getCUDADeviceAllocator();
-  constexpr c10::DispatchKeySet cuda_dks(c10::DispatchKey::CUDA);
-  return at::detail::empty_generic(
+  // auto* allocator = at::cuda::getCUDADeviceAllocator();
+  at::Allocator* allocator;
+  if (device.is_zc()) {
+    allocator = at::cuda::getZeroCopyAllocator();
+    constexpr c10::DispatchKeySet zc_dks(c10::DispatchKey::ZC);
+    return at::detail::empty_generic(
+      size, allocator, zc_dks, dtype, memory_format_opt);
+  } else {
+    allocator = at::cuda::getCUDADeviceAllocator();
+    constexpr c10::DispatchKeySet cuda_dks(c10::DispatchKey::CUDA);
+    return at::detail::empty_generic(
       size, allocator, cuda_dks, dtype, memory_format_opt);
+  }
+  // constexpr c10::DispatchKeySet cuda_dks(c10::DispatchKey::CUDA);
+  // return at::detail::empty_generic(
+  //     size, allocator, cuda_dks, dtype, memory_format_opt);
 }
 
 TensorBase empty_cuda(
@@ -53,12 +68,21 @@ TensorBase empty_strided_cuda(
     c10::optional<Device> device_opt) {
   at::globalContext().lazyInitCUDA();
   const auto device = device_or_default(device_opt);
-  TORCH_INTERNAL_ASSERT(device.is_cuda());
+  TORCH_INTERNAL_ASSERT(device.is_cuda() || device.is_zc());
   const DeviceGuard device_guard(device);
-  auto* allocator = at::cuda::getCUDADeviceAllocator();
-  constexpr c10::DispatchKeySet cuda_dks(c10::DispatchKey::CUDA);
-  return at::detail::empty_strided_generic(
-      size, stride, allocator, cuda_dks, dtype);
+  at::Allocator* allocator;
+  if(device.is_zc()){
+    allocator = at::cuda::getZeroCopyAllocator();
+    constexpr c10::DispatchKeySet zc_dks(c10::DispatchKey::ZC);
+    return at::detail::empty_strided_generic(
+        size, stride, allocator, zc_dks, dtype);
+  } else {
+    allocator = at::cuda::getCUDADeviceAllocator();
+    constexpr c10::DispatchKeySet cuda_dks(c10::DispatchKey::CUDA);
+    return at::detail::empty_strided_generic(
+        size, stride, allocator, cuda_dks, dtype);
+  }
+  
 }
 
 TensorBase empty_strided_cuda(

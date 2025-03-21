@@ -117,6 +117,7 @@ void* DispatchStubImpl::get_call_ptr(
     }
 
     case DeviceType::CUDA:
+    case DeviceType::ZC:
       TORCH_INTERNAL_ASSERT(cuda_dispatch_ptr, "DispatchStub: missing CUDA kernel");
       return cuda_dispatch_ptr;
 
